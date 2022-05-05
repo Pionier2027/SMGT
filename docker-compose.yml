@@ -1,0 +1,39 @@
+version: '3.5'
+
+services:
+  smgt-api:
+    container_name: smgt-api
+    build:
+      context: .
+      dockerfile: ./docker/api/Dockerfile
+      target: build
+    volumes:
+      - ./api:/go/src/api
+    ports:
+      - "1323:1323"
+    command: air
+    depends_on:
+      - smgt-db
+
+  smgt-db:
+    container_name: smgt-db
+    build:
+      context: .
+      dockerfile: ./docker/mysql/Dockerfile
+    environment:
+      MYSQL_ROOT_PASSWORD: smgt
+      MYSQL_DATABASE: smgt-sample
+      MYSQL_USER: smgt
+      MYSQL_PASSWORD: smgt
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+      - ./mysql/initdb.d:/docker-entrypoint-initdb.d
+      - ./mysql/conf.d:/etc/mysql/conf.d
+      - ./mysql/log/mysql:/var/log/mysql
+    ports:
+      - "3306:3306"
+
+networks:
+  smgt_network:
+    external: false
