@@ -1,0 +1,91 @@
+@startuml
+' hide the spot
+hide circle
+
+' avoid problems with angled crows feet
+skinparam linetype ortho
+
+entity "User" as user {
+  *id : int <<generated>>
+  --
+  *name : text
+  image : string
+  age : uint
+  introduction : string
+  evaluation : int
+  *password : string(hash)
+  *email : string
+}
+
+entity "Administrator" as admin {
+  *id : int <<generated>>
+  --
+  *password : string(hash)
+  *email : string
+  *priviledges : array(string)
+}
+
+entity "Comment" as comment {
+  *id : int <<generated>>
+  --
+  * **sender_id : int <<FK>>**
+  * **receiver_id : int <<FK>>**
+  * **item_id : int <<FK>>**
+  content : string
+}
+
+entity "Item" as item {
+  *id : int <<generated>>
+  --
+  name : string
+  images : string[]
+  price : uint
+  description : string
+  * **seller_id : int <<FK>>**
+  **buyer_id : int <<FK>>**
+  is_purchased : bool
+  is_open : bool
+  *category_id : int
+  *condition_id : int
+  like : uint
+  delivery_method : string
+  *created_at : timestamp
+  *updated_at : timestamp
+}
+
+entity "ItemHistory" as item_history {
+  *id : int <<generated>>
+  --
+  * **item_id : int <<FK>>**
+  *deleted_at : timestamp
+}
+
+entity "Login" as login {
+  *id : int <<generated>>
+  --
+  * **user_id : int <<FK>>**
+  *logged : bool
+}
+
+entity "Category" as category {
+  *id : int <<generated>>
+  --
+  * **category_id : int <<FK>>**
+  *category : string
+}
+
+entity "Condition" as condition {
+  *id : int <<generated>>
+  --
+  * **condition_id : int <<FK>>**
+  *condition : string
+}
+
+user ||--o{ comment
+user |o--o{ item
+user ||--|| login
+item ||--o{ comment
+item |o--o| item_history
+item ||--|{ category
+item ||--|| condition
+@enduml
